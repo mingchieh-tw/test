@@ -1,0 +1,50 @@
+<html>
+  <body>
+    <form id="myForm">
+      email:<input id="email" size="20" /><br /><br />
+      subject:<input id="subject" size="20" /><br /><br />
+      content:<textarea id="content"></textarea>
+    </form>
+    <br />
+    <button id="submit">submit</button>
+  </body>
+  <script type="text/javascript">
+    function submitData() {
+      let email = document.getElementById("email").value;
+      let subject = document.getElementById("subject").value;
+      let content = document.getElementById("content").value;
+
+      let data = {};
+
+      data["email"] = email;
+      data["subject"] = subject;
+      data["content"] = content;
+
+      let req = new XMLHttpRequest();
+      req.open("POST", "/api/mail", true);
+      req.setRequestHeader("Content-type", "application/json");
+
+      req.onreadystatechange = function () {
+        if (req.readyState == 4) {
+          //根据服务器的响应内容格式处理响应结果
+          if (req.getResponseHeader("content-type") === "application/json") {
+            var result = JSON.parse(req.responseText);
+            //根据返回结果判断验证码是否正确
+            if (result.code === -1) {
+              alert("验证码错误");
+            }
+          } else {
+            console.log(req.responseText);
+          }
+        }
+      };
+
+      req.send(JSON.stringify(data));
+    }
+
+    window.onload = function () {
+      let dom = document.getElementById("submit");
+      dom.addEventListener("click", submitData);
+    };
+  </script>
+</html>
